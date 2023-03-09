@@ -1,2 +1,2 @@
-# MJ-Backend
+# mojolll-be
 Back end Server Project.
