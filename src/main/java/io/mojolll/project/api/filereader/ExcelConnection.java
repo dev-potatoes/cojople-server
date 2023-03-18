@@ -1,9 +1,7 @@
 package io.mojolll.project.api.filereader;
 
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -12,17 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ExcelConnection {
-    private Map<String, Object> ymlReader(){
-        Yaml yaml = new Yaml();
-
-        InputStream inputStream = ExcelConnection.class.getClassLoader().getResourceAsStream("application.yml");
-
-        Map<String, Object> obj = yaml.load(inputStream);
-        return (Map<String, Object>)((Map<String, Object>) obj.get("spring")).get("datasource");
-    }
-
     private Connection getConnection() {
-        Map<String, Object> datasource = ymlReader();
+        Map<String, Object> datasource = YmlReader.datasourceReader("application.yml");
         String dbUrl = (String) datasource.get("url");
         String id = (String) datasource.get("username");
         String password = (String) datasource.get("password");
