@@ -10,8 +10,9 @@ import javax.persistence.*;
 public class University {
     @Id
     @Column(name = "University_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String type;
     private String name;
     private String domain;
+    private String branch;
 }
