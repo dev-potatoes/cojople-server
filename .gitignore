@@ -26,5 +26,7 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
-.yml
-.properties
+*.yml
+*.properties
+.DS_Store
+
