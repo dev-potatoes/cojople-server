@@ -9,7 +9,8 @@ spring:
     username: root
     password: hwryu990927!
 
-
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
   security:
     user:
       name: user

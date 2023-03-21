@@ -1,4 +1,4 @@
-package io.mojolll.project.api.filereader;
+package io.mojolll.project.filereader;
 
 import org.yaml.snakeyaml.Yaml;
 
