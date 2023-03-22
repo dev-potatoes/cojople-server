@@ -1,4 +1,4 @@
-package io.mojolll.project.v1.api.entity.dto.request;
+package io.mojolll.project.v1.api.dto.request;
 
 //import io.mojolll.project.v1.api.entity.University;
 import lombok.AllArgsConstructor;

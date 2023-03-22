@@ -35,3 +35,6 @@ logging:
           descriptor:
             sql:
               BasicBinder: TRACE
+
+jwt:
+  secret: "secretKey"

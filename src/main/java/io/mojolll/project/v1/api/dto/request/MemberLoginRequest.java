@@ -4,13 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-public class TestRequest {
-    private String title;
-    private String content;
-    private LocalDateTime createDate;
+public class MemberLoginRequest {
+    private String name;
+    private String password;
 }
