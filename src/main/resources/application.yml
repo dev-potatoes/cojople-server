@@ -9,12 +9,12 @@ spring:
     username: root
     password: hwryu990927!
 
-  autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
-  security:
-    user:
-      name: user
-      password: 1234
+#  autoconfigure:
+#    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+#  security:
+#    user:
+#      name: user
+#      password: 1234
 
   jpa:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect

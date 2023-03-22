@@ -6,12 +6,14 @@ import io.mojolll.project.v1.api.exception.ErrorCode;
 import io.mojolll.project.v1.api.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public String join (String name, String password) {
 
@@ -24,7 +26,7 @@ public class MemberService {
 //        저장
         Member member = Member.builder()
                 .name(name)
-                .password(password)
+                .password(passwordEncoder.encode(password))
                 .build();
         memberRepository.save(member);
         return "success";
