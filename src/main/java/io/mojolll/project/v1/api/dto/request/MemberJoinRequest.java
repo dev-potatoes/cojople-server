@@ -11,9 +11,9 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 public class MemberJoinRequest {
-//    private String email;
+    private String email;
     private String password;
-    private String name;
+//    private String name;
 //    private LocalDateTime createDate;
 //    private LocalDateTime loginDate;
 //    private University university;

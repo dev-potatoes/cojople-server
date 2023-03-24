@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -16,15 +15,19 @@ import java.time.LocalDateTime;
 public class Member {
 
     @Id
-    @Column(name = "Member_id")
+    @Column(name = "member_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-//    private String email;
+    private String email;
     private String password;
-    private String name;
-//    private LocalDateTime createDate;
-//    private LocalDateTime loginDate;
+//    private String name;
+
+
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
+////    private LocalDateTime createDate;
 //    @ManyToOne
 //    @JoinColumn(name = "University_id")
 //    private University university;
+//    private LocalDateTime loginDate;
 }

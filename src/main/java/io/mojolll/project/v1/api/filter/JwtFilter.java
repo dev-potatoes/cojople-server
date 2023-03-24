@@ -40,7 +40,7 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
         //Token 꺼내기
-        String token = authentication.split(" ")[1]; //0은Bearer 일테니까
+        String token = JwtUtil.getTokenFromHeader(authentication);
 
         //Token Expired 되었는지 여부
         if (JwtUtil.isExpired(token,secretKey)){

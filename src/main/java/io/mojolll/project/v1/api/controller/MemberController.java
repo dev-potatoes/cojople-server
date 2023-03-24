@@ -24,13 +24,13 @@ public class MemberController {
 
     @PostMapping("/join")
     public ResponseEntity join(@RequestBody MemberJoinRequest dto){
-        memberService.join(dto.getName(),dto.getPassword());
+        memberService.join(dto.getEmail(),dto.getPassword());
         return ResponseEntity.ok().body("회원가입 성공");
     }
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody MemberLoginRequest dto){
-        String token = memberService.login(dto.getName(), dto.getPassword());
+        String token = memberService.login(dto.getEmail(), dto.getPassword());
         return ResponseEntity.ok().body(token);
     }
 
