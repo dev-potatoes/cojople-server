@@ -1,5 +1,6 @@
-package io.mojolll.project.v1.api.configuration;
+package io.mojolll.project.v1.api.filter;
 
+import io.mojolll.project.v1.api.entity.UserRole;
 import io.mojolll.project.v1.api.service.MemberService;
 import io.mojolll.project.v1.api.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -49,15 +49,18 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        //Token으로 username 꺼내기
-        String username = JwtUtil.getUserName(token,secretKey);
-        log.info("username:{}",username);
+        //Token으로 email 꺼내기
+        String userEmail = JwtUtil.getUserEmail(token,secretKey);
+        log.info("email:{}",userEmail);
+        //Token으로 role 꺼내기
+        String userRole = JwtUtil.getRoleFromToken(token, secretKey);
+        log.info("role:{}",userRole);
 
         //권한 부여
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(username,null,
-                        //DB에서 Role같은 것들을 지정했으면 거기서 꺼내서 넣고 지금은 하드코딩해서 넣어두기 UserDetail
-                        List.of(new SimpleGrantedAuthority("USER")));
+                new UsernamePasswordAuthenticationToken(userEmail,null,
+                        //DB에서 Role같은 것들을 지정했으면 거기서 꺼내서 넣기 UserDetail
+                        List.of(new SimpleGrantedAuthority(userRole)));
 
         // Detail을 넣어준다.
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
