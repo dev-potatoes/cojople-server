@@ -9,11 +9,12 @@ spring:
     username: root
     password: hwryu990927!
 
-
-  security:
-    user:
-      name: user
-      password: 1234
+#  autoconfigure:
+#    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+#  security:
+#    user:
+#      name: user
+#      password: 1234
 
   jpa:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
@@ -24,6 +25,7 @@ spring:
       ddl-auto: create
     defer-datasource-initialization: true
 
+
 logging:
   level:
     org:
@@ -33,3 +35,10 @@ logging:
           descriptor:
             sql:
               BasicBinder: TRACE
+
+jwt:
+#  header: Authorization
+  #HS512 알고리즘을 사용할 것이기 때문에 512bit, 즉 64byte 이상의 secret key를 사용해야 한다.
+  #echo 'silvernine-tech-spring-boot-jwt-tutorial-secret-silvernine-tech-spring-boot-jwt-tutorial-secret' 이라는 문자열을 base64로 인코딩
+  secret: bW9qb2xsbC1nd251LXByb2plY3Qtc3ByaW5nLWJvb3Qtand0LXNlY3JldC11aGFudXUtc3R1ZHktc3ByaW5nLWJvb3Qtand0LW1vam9sbC1wcm9qZWN0LXNlY3JldA==
+  token-validity-in-seconds: 86400	# 초

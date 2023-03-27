@@ -21,6 +21,7 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
 	runtimeOnly 'mysql:mysql-connector-java:8.0.32'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
@@ -37,6 +38,16 @@ dependencies {
 
 	testImplementation("org.junit.vintage:junit-vintage-engine") {
 		exclude group: "org.hamcrest", module: "hamcrest-core"
+
+// Spring Security Test 라이브러리 import .with(csrf()) 사용하기
+// https://mvnrepository.com/artifact/org.springframework.security/spring-security-test
+		testImplementation group: 'org.springframework.security', name: 'spring-security-test'
+
+// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api
+		implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+// javax.xml.bind.DatatypeConverter 발생으로 인해서 추가
+//		implementation 'javax.xml.bind:jaxb-api:2.3.0'
+
 	}
 }
 
