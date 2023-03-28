@@ -2,6 +2,7 @@ package io.mojolll.project.v1.api.config;
 
 import io.mojolll.project.v1.api.config.jwt.JwtAuthenticationFilter;
 import io.mojolll.project.v1.api.config.jwt.JwtAuthorizationFilter;
+import io.mojolll.project.v1.api.config.jwt.JwtTokenInterceptor;
 import io.mojolll.project.v1.api.repositroy.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @RequiredArgsConstructor
@@ -35,7 +38,9 @@ public class SecurityConfig {
                 .httpBasic().disable() //Authentication header에 id,pw 주는 방식 (Bearer Token 사용할거니까)
                 .apply(new MyCustomDsl()) // 커스텀 필터 등록
                 .and()
-                .authorizeRequests(authroize -> authroize.antMatchers("/api/v1/user/**")
+                .authorizeRequests(authroize -> authroize
+                        .antMatchers("/api/v1/users/join","/api/v1/users/login").permitAll()
+                        .antMatchers("/api/v1/users/**")
                         .access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
                         .antMatchers("/api/v1/manager/**")
                         .access("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")

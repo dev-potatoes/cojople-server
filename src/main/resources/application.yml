@@ -2,6 +2,7 @@ excel:
   path: "/Users/ryu/mojolll/"
   fileName: "학교개황(20230228 기준).xls"
 
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

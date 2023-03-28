@@ -26,5 +26,6 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
-.yml
-.properties
+*.yml
+*.properties
+**/src/main/java/io/mojolll/project/v1/api/config/jwt/JwtProperties.java
