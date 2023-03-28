@@ -1,2 +1,11 @@
-package io.mojolll.project.v1.api.dto;public class SignupRequestDto {
+package io.mojolll.project.v1.api.dto;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class SignUpRequestDto {
+    private String email;
+    private String password;
 }
