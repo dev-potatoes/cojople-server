@@ -12,13 +12,4 @@ public class YmlReader {
         Map<String, Object> obj = yaml.load(inputStream);
         return (Map<String, Object>)((Map<String, Object>) obj.get("spring")).get("datasource");
     }
-
-    public static Map<String, Object> localFileReader (String filename){
-        Yaml yaml = new Yaml();
-        InputStream inputStream = ExcelMain.class.getClassLoader().getResourceAsStream(filename);
-        Map<String, Object> obj = yaml.load(inputStream);
-        return (Map<String, Object>) obj.get("excel");
-    }
-
-
 }

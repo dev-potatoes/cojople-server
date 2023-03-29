@@ -9,9 +9,8 @@ public class ExcelMain {
     public static void main(String[] args) {
         ExcelFileReader er = new ExcelFileReader();
         ExcelConnection ec = new ExcelConnection();
-        Map<String, Object> excelFileData = YmlReader.localFileReader("application.yml");
-        String path = (String) excelFileData.get("path");
-        String fileName = (String) excelFileData.get("fileName");
+        String path = ExcelProperties.PATH;
+        String fileName = ExcelProperties.FILE_NAME;
         List<Map<Object, Object>> excelData = er.readExcel(path, fileName);
         try {
             ec.excute(excelData);
