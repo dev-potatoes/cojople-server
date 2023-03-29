@@ -1,16 +1,13 @@
 package io.mojolll.project.v1.api.config.auth;
 
-import io.mojolll.project.v1.api.model.User;
-import io.mojolll.project.v1.api.repositroy.UserRepository;
+import io.mojolll.project.v1.api.user.model.User;
+import io.mojolll.project.v1.api.user.repositroy.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.Collections;
 
 //http://localhost:8080/login 올때 동작함
 @Service

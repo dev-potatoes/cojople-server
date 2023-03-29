@@ -1,4 +1,4 @@
-package io.mojolll.mojolll;
+package io.mojolll.project;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

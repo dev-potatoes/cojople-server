@@ -40,8 +40,15 @@ dependencies {
 		exclude group: "org.hamcrest", module: "hamcrest-core"
 	}
 
-//예제 JWT
-//	implementation 'com.auth0:java-jwt:4.3.0'
+//	test를 위한 embedded redis
+//	testImplementation group: 'it.ozimov', name: 'embedded-redis', version: '0.7.2'
+
+//	## 만약 test 이외에도 embedded 사용하고 싶은 경우
+// redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation ('it.ozimov:embedded-redis:0.7.3') {
+		exclude group: 'org.slf4j', module: 'slf4j-simple'
+	}
 }
 
 tasks.named('test') {

@@ -1,8 +1,8 @@
 package io.mojolll.project.v1.api.config.jwt;
 
 import io.jsonwebtoken.*;
-import io.mojolll.project.v1.api.model.User;
-import io.mojolll.project.v1.api.model.UserRole;
+import io.mojolll.project.v1.api.user.model.User;
+import io.mojolll.project.v1.api.user.model.UserRole;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.spec.SecretKeySpec;

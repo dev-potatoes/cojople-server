@@ -1,10 +1,10 @@
-package io.mojolll.project.v1.api.controller;
+package io.mojolll.project.v1.api.user.controller;
 
 import io.mojolll.project.v1.api.config.jwt.JwtProperties;
 import io.mojolll.project.v1.api.config.jwt.TokenUtils;
-import io.mojolll.project.v1.api.dto.SignUpRequestDto;
-import io.mojolll.project.v1.api.model.User;
-import io.mojolll.project.v1.api.service.UserService;
+import io.mojolll.project.v1.api.user.dto.SignUpRequestDto;
+import io.mojolll.project.v1.api.user.model.User;
+import io.mojolll.project.v1.api.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

@@ -1,13 +1,11 @@
-package io.mojolll.project.v1.api.service;
+package io.mojolll.project.v1.api.user.service;
 
 import io.mojolll.project.v1.api.config.jwt.TokenUtils;
-import io.mojolll.project.v1.api.dto.LoginRequestDto;
-import io.mojolll.project.v1.api.dto.SignUpRequestDto;
-import io.mojolll.project.v1.api.model.User;
-import io.mojolll.project.v1.api.model.UserRole;
-import io.mojolll.project.v1.api.repositroy.UserRepository;
+import io.mojolll.project.v1.api.user.dto.SignUpRequestDto;
+import io.mojolll.project.v1.api.user.model.User;
+import io.mojolll.project.v1.api.user.model.UserRole;
+import io.mojolll.project.v1.api.user.repositroy.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;

@@ -1,10 +1,10 @@
-package io.mojolll.project.v1.api.model;
+package io.mojolll.project.v1.api.user.model;
+
 
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

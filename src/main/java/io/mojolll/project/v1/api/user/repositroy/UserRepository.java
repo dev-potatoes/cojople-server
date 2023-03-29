@@ -1,6 +1,6 @@
-package io.mojolll.project.v1.api.repositroy;
+package io.mojolll.project.v1.api.user.repositroy;
 
-import io.mojolll.project.v1.api.model.User;
+import io.mojolll.project.v1.api.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -2,7 +2,7 @@ package io.mojolll.project.v1.api.config.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mojolll.project.v1.api.config.auth.PrincipalDetails;
-import io.mojolll.project.v1.api.dto.LoginRequestDto;
+import io.mojolll.project.v1.api.user.dto.LoginRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;

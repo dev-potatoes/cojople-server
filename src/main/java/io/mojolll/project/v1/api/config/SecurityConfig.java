@@ -2,8 +2,7 @@ package io.mojolll.project.v1.api.config;
 
 import io.mojolll.project.v1.api.config.jwt.JwtAuthenticationFilter;
 import io.mojolll.project.v1.api.config.jwt.JwtAuthorizationFilter;
-import io.mojolll.project.v1.api.config.jwt.JwtTokenInterceptor;
-import io.mojolll.project.v1.api.repositroy.UserRepository;
+import io.mojolll.project.v1.api.user.repositroy.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,12 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @RequiredArgsConstructor

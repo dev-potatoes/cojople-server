@@ -1,4 +1,4 @@
-package io.mojolll.project.v1.api.controller.error;
+package io.mojolll.project.v1.api.error;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
