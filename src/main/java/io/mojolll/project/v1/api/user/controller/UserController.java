@@ -2,6 +2,7 @@ package io.mojolll.project.v1.api.user.controller;
 
 import io.mojolll.project.v1.api.config.jwt.JwtProperties;
 import io.mojolll.project.v1.api.config.jwt.TokenUtils;
+import io.mojolll.project.v1.api.user.dto.LoginRequestDto;
 import io.mojolll.project.v1.api.user.dto.SignUpRequestDto;
 import io.mojolll.project.v1.api.user.model.User;
 import io.mojolll.project.v1.api.user.service.UserService;
@@ -29,22 +30,28 @@ public class UserController {
     }
 
     @PostMapping(value = "/join")
-    public ResponseEntity<User> signUp(@RequestBody final SignUpRequestDto signUpDTO, HttpServletResponse response) {
+    public ResponseEntity<User> signUp(@RequestBody final SignUpRequestDto signUpDto) {
 
-        if(userService.isEmailDuplicated(signUpDTO.getEmail())){
+        if(userService.isEmailDuplicated(signUpDto.getEmail())){
             return ResponseEntity.badRequest().build();
         }
-        User user = userService.signUp(signUpDTO);
-        String token = TokenUtils.generateJwtAccessToken(user);
-        response.setHeader(JwtProperties.HEADER_STRING,JwtProperties.TOKEN_PREFIX + token);
+        return ResponseEntity.ok().body(userService.signUp(signUpDto));
+    }
 
+    @PostMapping("/login") //토큰X
+    public ResponseEntity<User> login(@RequestBody final LoginRequestDto loginDto,
+                                      HttpServletResponse response){
+
+        User user = userService.login(loginDto);
+        String token = TokenUtils.generateJwtAccessToken(user);
+        log.info("controller token{} :",token);
+        response.setHeader(JwtProperties.HEADER_STRING,JwtProperties.TOKEN_PREFIX + token);
         return ResponseEntity.ok().body(user);
     }
 
-    @GetMapping("/login") //토큰O
+    @GetMapping("/login2") //토큰O
     public ResponseEntity<User> login(HttpServletRequest request, HttpServletResponse response){
         String header = request.getHeader(JwtProperties.HEADER_STRING);
-
 
         String[] token = header.split(" ");
         log.info("controller tokenFromHeader -> 0:{}",token[0]);
@@ -54,7 +61,7 @@ public class UserController {
         if (!JwtProperties.TOKEN_PREFIX.trim().equals(token[0])){
             throw new NoSuchElementException("token이 일치하지 않습니다.");
         }
-        User user = userService.login(token[1]);
+        User user = userService.login2(token[1]);
 
         return ResponseEntity.ok().body(user);
     }

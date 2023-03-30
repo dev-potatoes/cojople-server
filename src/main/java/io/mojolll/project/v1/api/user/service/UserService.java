@@ -1,6 +1,7 @@
 package io.mojolll.project.v1.api.user.service;
 
 import io.mojolll.project.v1.api.config.jwt.TokenUtils;
+import io.mojolll.project.v1.api.user.dto.LoginRequestDto;
 import io.mojolll.project.v1.api.user.dto.SignUpRequestDto;
 import io.mojolll.project.v1.api.user.model.User;
 import io.mojolll.project.v1.api.user.model.UserRole;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -33,8 +35,18 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User login(final LoginRequestDto loginDto) {
+        User searchUser = userRepository.findByEmail(loginDto.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("아이디가 일치하지 않습니다."));
+
+        if (!passwordEncoder.matches(loginDto.getPassword(),searchUser.getPassword())){
+            throw new RuntimeException();
+        }
+        return searchUser;
+    }
+
     //token 있는거
-    public User login(String token) {
+    public User login2(String token) {
         String userEmailFromToken = TokenUtils.getUserEmailFromToken(token);
 
         return userRepository.findByEmail(userEmailFromToken)
