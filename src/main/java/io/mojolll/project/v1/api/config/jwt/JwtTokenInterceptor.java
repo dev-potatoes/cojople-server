@@ -13,11 +13,11 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) throws IOException {
         log.info("JwtTokenInterceptor : 진입");
-        final String header = request.getHeader(JwtProperties.HEADER_STRING);
+        final String header = request.getHeader(JwtProperties.ACCESS_HEADER_STRING);
 
         if (header != null) {
             final String token = TokenUtils.getTokenFromHeader(header);
-            if (TokenUtils.isValidToken(token)) {
+            if (TokenUtils.isValidToken(token, JwtProperties.ACCESS_SECRET)) {
                 return true;
             }
         }

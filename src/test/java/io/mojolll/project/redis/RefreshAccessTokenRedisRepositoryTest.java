@@ -1,7 +1,7 @@
 package io.mojolll.project.redis;
 
-import io.mojolll.project.v1.api.redis.logout.LogoutAccessTokenFromRedis;
-import io.mojolll.project.v1.api.redis.logout.LogoutAccessTokenRedisRepository;
+import io.mojolll.project.v1.api.redis.refresh.RefreshTokenFromRedis;
+import io.mojolll.project.v1.api.redis.refresh.RefreshTokenRedisRepository;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,34 +15,34 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class LogoutAccessTokenRedisRepositoryTest {
+public class RefreshAccessTokenRedisRepositoryTest {
 
     @Autowired
-    LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
+    RefreshTokenRedisRepository refreshTokenRedisRepository;
 
     @BeforeEach
     public void clear(){
-        logoutAccessTokenRedisRepository.deleteAll();
+        refreshTokenRedisRepository.deleteAll();
     }
 
     @DisplayName("save")
     @Test
     public void save() throws Exception{
         //given
-        String accessToken = "accessToken";
+        String refreshToken = "refreshToken";
         String email = "email";
         Long expiration = 3000L;
-        LogoutAccessTokenFromRedis logoutAccessToken = LogoutAccessTokenFromRedis.createLogoutAccessToken(accessToken, email, expiration);
+        RefreshTokenFromRedis refreshTokenFromRedis = RefreshTokenFromRedis.createRefreshToken(refreshToken, email, expiration);
 
         //when
-        logoutAccessTokenRedisRepository.save(logoutAccessToken);
+        refreshTokenRedisRepository.save(refreshTokenFromRedis);
 
         //then
-        LogoutAccessTokenFromRedis find = logoutAccessTokenRedisRepository.findById(accessToken).get();
+        RefreshTokenFromRedis find = refreshTokenRedisRepository.findById(refreshToken).get();
 
 
         assertAll(
-                () -> assertEquals(accessToken,find.getId()),
+                () -> assertEquals(refreshToken,find.getId()),
                 () -> assertEquals(email,find.getEmail()),
                 () -> assertEquals(expiration/1000,find.getExpiration())
         );

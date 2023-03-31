@@ -1,4 +1,4 @@
-package io.mojolll.project.v1.api.config.redis;
+package io.mojolll.project.v1.api.redis.refresh;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +10,7 @@ import org.springframework.data.redis.core.index.Indexed;
 import javax.persistence.Id;
 
 @Getter
-@RedisHash("logoutAccessToken")
+@RedisHash("refreshToken")
 @AllArgsConstructor
 @Builder
 /**
@@ -22,21 +22,21 @@ import javax.persistence.Id;
  * @TimeToLive : 유효시간 값으로 초단위 입니다. 유효 시간이 지나면 자동으로 삭제됩니다.
  * @TimeToLive(unit = TimeUnit.MILLISECONDS) 옵션으로 단위를 변경할 수 있습니다.
  */
-public class LogoutAccessTokenFromRedis {
+public class RefreshTokenFromRedis {
     @Id
     private String id;
 
     @Indexed // 필드 값으로 데이터 찾을 수 있게 하는 어노테이션(findByAccessToken)
-    private String username;
+    private String email;
 
     @TimeToLive
     private Long expiration; // seconds
 
-    public static LogoutAccessTokenFromRedis createLogoutAccessToken(String accessToken, String username,
-                                                                                    Long remainingMilliSeconds){
-        return LogoutAccessTokenFromRedis.builder()
-                .id(accessToken)
-                .username(username)
+    public static RefreshTokenFromRedis createRefreshToken(String refreshToken, String email,
+                                                                Long remainingMilliSeconds){
+        return RefreshTokenFromRedis.builder()
+                .id(refreshToken)
+                .email(email)
                 .expiration(remainingMilliSeconds/1000)
                 .build();
     }

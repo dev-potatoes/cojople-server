@@ -2,7 +2,7 @@ package io.mojolll.project.v1.api.config.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mojolll.project.v1.api.config.auth.PrincipalDetails;
-import io.mojolll.project.v1.api.user.dto.LoginRequestDto;
+import io.mojolll.project.v1.api.user.dto.UserRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -38,20 +38,20 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         // request에 있는 username과 password를 파싱해서 자바 Object로 받기
         ObjectMapper om = new ObjectMapper();
-        LoginRequestDto loginRequestDto = null;
+        UserRequestDto userRequestDto = null;
         try {
-            loginRequestDto = om.readValue(request.getInputStream(), LoginRequestDto.class);
+            userRequestDto = om.readValue(request.getInputStream(), UserRequestDto.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        log.info("JwtAuthenticationFilter{}:",loginRequestDto);
+        log.info("JwtAuthenticationFilter{}:", userRequestDto);
 
         // 유저네임패스워드 토큰 생성
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(
-                        loginRequestDto.getEmail(),
-                        loginRequestDto.getPassword());
+                        userRequestDto.getEmail(),
+                        userRequestDto.getPassword());
 
         log.info("JwtAuthenticationFilter : 토큰생성완료");
 
@@ -90,7 +90,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         PrincipalDetails principalDetailis = (PrincipalDetails) authResult.getPrincipal();
 
         String token = TokenUtils.generateJwtAccessToken(principalDetailis.getUser());
-        response.setHeader(JwtProperties.HEADER_STRING,JwtProperties.TOKEN_PREFIX + token);
+        response.setHeader(JwtProperties.ACCESS_HEADER_STRING,JwtProperties.TOKEN_PREFIX + token);
     }
 
 }

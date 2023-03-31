@@ -1,5 +1,6 @@
 package io.mojolll.project.v1.api.config.jwt;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.mojolll.project.v1.api.config.auth.PrincipalDetails;
 import io.mojolll.project.v1.api.user.model.User;
 import io.mojolll.project.v1.api.user.repositroy.UserRepository;
@@ -33,24 +34,33 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        String header = request.getHeader(JwtProperties.HEADER_STRING);
+        String header = request.getHeader(JwtProperties.ACCESS_HEADER_STRING);
         //헤더가 있는지 확인
         if (header == null || !header.startsWith(JwtProperties.TOKEN_PREFIX)) {
             chain.doFilter(request, response);
             return;
         }
         log.info("header:{}",header);
-        String token = request.getHeader(JwtProperties.HEADER_STRING)
+        String token = request.getHeader(JwtProperties.ACCESS_HEADER_STRING)
                 .replace(JwtProperties.TOKEN_PREFIX, "");
+
+
 
         // 토큰 검증 (이게 인증이기 때문에 AuthenticationManager도 필요 없음)
         // 내가 SecurityContext에 집적접근해서 세션을 만들때 자동으로 UserDetailsService에 있는
         // loadByUsername이 호출됨.
 //        String email = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(token)//verify(token) 서명
 //                .getClaim("username").asString(); //서명되면 username꺼내서 String으로
-        String email = TokenUtils.getUserEmailFromToken(token);
+        String email = "";
+        try {
+            email = TokenUtils.getUserEmailFromAccessToken(token);
+        } catch (ExpiredJwtException e) {
+            log.error("refresh token을 이용해서 access token 재발급 해주기");
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
-        if (email != null) {
+        if (email != "") {
             User user = userRepository.findByEmail(email).get();
 
             // 인증은 토큰 검증시 끝. 인증을 하기 위해서가 아닌 스프링 시큐리티가 수행해주는 권한 처리를 위해
@@ -67,5 +77,4 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         chain.doFilter(request, response);
     }
-
 }
