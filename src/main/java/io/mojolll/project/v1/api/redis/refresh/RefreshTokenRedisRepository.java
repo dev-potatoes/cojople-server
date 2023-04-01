@@ -10,4 +10,6 @@ public interface RefreshTokenRedisRepository extends CrudRepository<RefreshToken
 
     // @Indexed 사용한 필드만 가능
     Optional<RefreshTokenFromRedis> findByEmail(String email);
+    Optional<RefreshTokenFromRedis> findByAccessToken(String accessToken);
+    void deleteByEmail (String email);
 }

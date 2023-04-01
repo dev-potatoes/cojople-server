@@ -4,16 +4,22 @@ import io.mojolll.project.v1.api.config.jwt.JwtProperties;
 import io.mojolll.project.v1.api.config.jwt.TokenUtils;
 import io.mojolll.project.v1.api.redis.logout.LogoutAccessTokenFromRedis;
 import io.mojolll.project.v1.api.redis.refresh.RefreshTokenFromRedis;
+import io.mojolll.project.v1.api.user.dto.ReissueDto;
 import io.mojolll.project.v1.api.user.dto.UserRequestDto;
 import io.mojolll.project.v1.api.user.model.User;
 import io.mojolll.project.v1.api.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AuthorizationServiceException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -52,17 +58,25 @@ public class UserController {
     public ResponseEntity<User> login(@RequestBody final UserRequestDto userDto,
                                       HttpServletResponse response){
 
-        User user = userService.login(userDto);
-        String accessToken = TokenUtils.generateJwtAccessToken(user);
-        response.setHeader(JwtProperties.ACCESS_HEADER_STRING,JwtProperties.TOKEN_PREFIX + accessToken);
 
-        return ResponseEntity.ok().body(user);
+        HashMap<String, Object> responseValue = userService.login(userDto);
+
+        response.setHeader(JwtProperties.ACCESS_HEADER_STRING,JwtProperties.TOKEN_PREFIX +
+                responseValue.get("accessToken").toString());
+
+        return ResponseEntity.ok().body((User)responseValue.get("user"));
     }
 
     @PostMapping("/logout")
     public ResponseEntity<LogoutAccessTokenFromRedis> logout(HttpServletRequest request){
+
         String token = request.getHeader(JwtProperties.ACCESS_HEADER_STRING)
                 .replace(JwtProperties.TOKEN_PREFIX, "");
+
+        if (!TokenUtils.isValidAccessToken(token)){
+            throw new AuthorizationServiceException("토큰 에러");
+        }
+
         return userService.logout(token);
     }
 
@@ -75,6 +89,14 @@ public class UserController {
         //expire 되었을 때 refresh토큰으로 발급해주기 -> response.sendRedirect(); 형이랑 말해보기
         // throws ExpiredJwtException, MalformedJwtException, SignatureException
         return userService.login2(token);
+    }
+
+    @PostMapping("/reissue")
+    public ResponseEntity reissue(@Validated @RequestBody ReissueDto reissueDto, HttpServletResponse response) {
+
+        String reissueAccessToken = userService.reissue(reissueDto);
+        response.setHeader(JwtProperties.ACCESS_HEADER_STRING,JwtProperties.TOKEN_PREFIX + reissueAccessToken);
+        return ResponseEntity.ok().build();
     }
 
 

@@ -7,21 +7,21 @@ import io.mojolll.project.v1.api.redis.logout.LogoutAccessTokenFromRedis;
 import io.mojolll.project.v1.api.redis.logout.LogoutAccessTokenRedisRepository;
 import io.mojolll.project.v1.api.redis.refresh.RefreshTokenFromRedis;
 import io.mojolll.project.v1.api.redis.refresh.RefreshTokenRedisRepository;
+import io.mojolll.project.v1.api.user.dto.ReissueDto;
 import io.mojolll.project.v1.api.user.dto.UserRequestDto;
 import io.mojolll.project.v1.api.user.model.User;
 import io.mojolll.project.v1.api.user.model.UserRole;
 import io.mojolll.project.v1.api.user.repositroy.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -46,7 +46,9 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User login(final UserRequestDto userDto) {
+    public HashMap<String, Object> login(final UserRequestDto userDto) {
+        HashMap<String, Object> response = new HashMap<>();
+
         User searchUser = userRepository.findByEmail(userDto.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("아이디가 일치하지 않습니다."));
 
@@ -54,22 +56,41 @@ public class UserService {
             throw new RuntimeException();
         }
 
+        Optional<RefreshTokenFromRedis> refreshTokenEntity = refreshTokenRedisRepository.findByEmail(userDto.getEmail());
+        Optional<LogoutAccessTokenFromRedis> logoutEntity = logoutAccessTokenRedisRepository.findByEmail(userDto.getEmail());
+
+        if (logoutEntity.isPresent())
+            logoutAccessTokenRedisRepository.delete(logoutEntity.get());
+        if(refreshTokenEntity.isPresent())
+            refreshTokenRedisRepository.delete(refreshTokenEntity.get());
+
+        String accessToken = TokenUtils.generateJwtAccessToken(searchUser);
+
         String refreshToken = TokenUtils.generateJwtRefreshToken(searchUser);
         RefreshTokenFromRedis refreshTokenFromRedis = RefreshTokenFromRedis.
-                createRefreshToken(refreshToken, searchUser.getEmail(),
+                createRefreshToken(refreshToken, searchUser.getEmail(), accessToken,
                         TokenUtils.getExpireTimeFromRefreshToken(refreshToken).getTime());
 
         refreshTokenRedisRepository.save(refreshTokenFromRedis);
-        return searchUser;
+        response.put("user",searchUser);
+        response.put("accessToken",accessToken);
+
+        return response;
     }
 
     public ResponseEntity<LogoutAccessTokenFromRedis> logout(String token) {
         String userEmailFromAccessToken = TokenUtils.getUserEmailFromAccessToken(token);
         Date expireTimeFromAccessToken = TokenUtils.getExpireTimeFromAccessToken(token);
-        LogoutAccessTokenFromRedis logoutAccessToken = LogoutAccessTokenFromRedis.createLogoutAccessToken(token, userEmailFromAccessToken,
-                expireTimeFromAccessToken.getTime());
+
+        LogoutAccessTokenFromRedis logoutAccessToken = LogoutAccessTokenFromRedis.createLogoutAccessToken(token,
+                userEmailFromAccessToken, expireTimeFromAccessToken.getTime());
 
         logoutAccessTokenRedisRepository.save(logoutAccessToken);
+
+        RefreshTokenFromRedis refreshToken = refreshTokenRedisRepository.findByEmail(userEmailFromAccessToken)
+                .orElseThrow(() -> new UsernameNotFoundException("refresh token 못찾음"));
+
+        refreshTokenRedisRepository.delete(refreshToken);
         return ResponseEntity.ok().body(logoutAccessToken);
     }
 
@@ -78,12 +99,28 @@ public class UserService {
 
         String userEmailFromToken = TokenUtils.getUserEmailFromAccessToken(token);
 
-        if(logoutAccessTokenRedisRepository.findById(token).isEmpty()){
+//        if(logoutAccessTokenRedisRepository.findById(token).isEmpty()){
             return ResponseEntity.ok().body(userRepository.findByEmail(userEmailFromToken)
                     .orElseThrow(() -> new UsernameNotFoundException(token + "에 해당하는 유저를 찾을 수 없습니다.")));
-        }
+//        }
 
-        return ResponseEntity.badRequest().build();
+//        return ResponseEntity.badRequest().build();
+    }
+
+    public String reissue(final ReissueDto reissueDto){
+
+        RefreshTokenFromRedis refreshToken = refreshTokenRedisRepository.findByAccessToken(reissueDto.getAccessToken())
+                .orElseThrow(() -> new UsernameNotFoundException("token이 일치하지 않습니다."));
+
+        if (!TokenUtils.isValidRefreshToken(refreshToken.getId()))
+            throw new UsernameNotFoundException("refresh token 에러");
+
+        User user = userRepository.findByEmail(refreshToken.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("token이 일치하지 않습니다."));
+
+        String accessToken = TokenUtils.generateJwtAccessToken(user);
+        refreshToken.updateAccessToken(accessToken);
+        return accessToken;
     }
 
     public boolean isEmailDuplicated(final String email) {
