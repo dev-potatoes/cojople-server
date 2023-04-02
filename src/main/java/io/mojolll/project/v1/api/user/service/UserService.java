@@ -120,6 +120,8 @@ public class UserService {
 
         String accessToken = TokenUtils.generateJwtAccessToken(user);
         refreshToken.updateAccessToken(accessToken);
+        refreshTokenRedisRepository.save(refreshToken);
+
         return accessToken;
     }
 
