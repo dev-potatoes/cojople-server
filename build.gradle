@@ -19,6 +19,7 @@ repositories {
 }
 
 dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
@@ -28,6 +29,7 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 
 
 // https://mvnrepository.com/artifact/org.apache.poi/poi
@@ -48,6 +50,16 @@ dependencies {
 // javax.xml.bind.DatatypeConverter 발생으로 인해서 추가
 //		implementation 'javax.xml.bind:jaxb-api:2.3.0'
 
+	}
+
+//	test를 위한 embedded redis
+//	testImplementation group: 'it.ozimov', name: 'embedded-redis', version: '0.7.2'
+
+//	## 만약 test 이외에도 embedded 사용하고 싶은 경우
+// redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation ('it.ozimov:embedded-redis:0.7.3') {
+		exclude group: 'org.slf4j', module: 'slf4j-simple'
 	}
 }
 

@@ -30,3 +30,6 @@ out/
 *.properties
 .DS_Store
 
+
+**/src/main/java/io/mojolll/project/v1/api/config/jwt/JwtProperties.java
+
