@@ -1,4 +1,4 @@
-package io.mojolll.project.v1.api.config.redis;
+package io.mojolll.project.v1.api.redis.config;
 
 
 import lombok.extern.slf4j.Slf4j;

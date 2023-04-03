@@ -1,8 +1,6 @@
-package io.mojolll.project.v1.api.config.redis;
+package io.mojolll.project.v1.api.redis.logout;
 
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
@@ -11,5 +9,5 @@ import java.util.Optional;
  */
 public interface LogoutAccessTokenRedisRepository extends CrudRepository<LogoutAccessTokenFromRedis,String> {
     // @Indexed 사용한 필드만 가능
-    Optional<LogoutAccessTokenFromRedis> findByUsername(String username);
+    Optional<LogoutAccessTokenFromRedis> findByEmail(String email);
 }

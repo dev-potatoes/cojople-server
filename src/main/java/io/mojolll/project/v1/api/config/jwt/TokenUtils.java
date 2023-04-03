@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.mojolll.project.v1.api.user.model.User;
 import io.mojolll.project.v1.api.user.model.UserRole;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
@@ -17,30 +18,26 @@ import java.util.Map;
 public final class TokenUtils {
 
     public static String generateJwtAccessToken(User user) {
-        JwtBuilder builder = Jwts.builder()
-                .setSubject(user.getEmail())
-                .setHeader(createHeader())
-                .setClaims(createClaims(user))
-                .setExpiration(new Date(System.currentTimeMillis() + JwtProperties.ACCESS_TOKEN_EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS256, createSigningKey());
-
-        return builder.compact();
+        return setJwt(user, generateAccessTokenExpireTime(), JwtProperties.ACCESS_SECRET);
     }
 
     public static String generateJwtRefreshToken(User user) {
+        return setJwt(user, createExpireDateForOneYear(), JwtProperties.REFRESH_SECRET);
+    }
+
+    private static String setJwt(User user, Date expireDate, String secret) {
         JwtBuilder builder = Jwts.builder()
                 .setSubject(user.getEmail())
                 .setHeader(createHeader())
                 .setClaims(createClaims(user))
-                .setExpiration(createExpireDateForOneYear())
-                .signWith(SignatureAlgorithm.HS256, createSigningKey());
-
+                .setExpiration(expireDate)
+                .signWith(SignatureAlgorithm.HS256, createSigningKey(secret));
         return builder.compact();
     }
 
-    public static boolean isValidToken(String token) {
+    public static boolean isValidToken(String token, String secret) {
         try {
-            Claims claims = getClaimsFormToken(token);
+            Claims claims = getClaimsFormToken(token, secret);
             log.info("expireTime:{}",claims.getExpiration());
             log.info("email:{}",claims.get("email"));
             log.info("role:{}",claims.get("role"));
@@ -60,6 +57,10 @@ public final class TokenUtils {
 
     public static String getTokenFromHeader(String header) {
         return header.split(" ")[1];
+    }
+
+    private static Date generateAccessTokenExpireTime() {
+        return new Date(System.currentTimeMillis() + JwtProperties.EXPIRATION_TIME);
     }
 
     private static Date createExpireDateForOneYear() {
@@ -89,24 +90,33 @@ public final class TokenUtils {
         return claims;
     }
 
-    private static Key createSigningKey() {
-        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(JwtProperties.SECRET);
+    private static Key createSigningKey(String secret) {
+        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(secret);
         return new SecretKeySpec(apiKeySecretBytes, SignatureAlgorithm.HS256.getJcaName());
     }
 
     //parser() ->  throws ExpiredJwtException, MalformedJwtException, SignatureException
-    private static Claims getClaimsFormToken(String token)  {
-        return Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(JwtProperties.SECRET))
+    private static Claims getClaimsFormToken(String token, String secret)  {
+        return Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(secret))
                 .parseClaimsJws(token).getBody();
     }
 
-    public static String getUserEmailFromToken(String token) {
-        Claims claims = getClaimsFormToken(token);
+    public static String getUserEmailFromAccessToken(String token) {
+        Claims claims = getClaimsFormToken(token, JwtProperties.ACCESS_SECRET);
         return (String) claims.get("email");
     }
 
-    private static UserRole getRoleFromToken(String token) {
-        Claims claims = getClaimsFormToken(token);
-        return (UserRole) claims.get("role");
+//    private static UserRole getRoleFromAccessToken(String token) {
+//        Claims claims = getClaimsFormToken(token,JwtProperties. ACCESS_SECRET);
+//        return (UserRole) claims.get("role");
+//    }
+    public static Date getExpireTimeFromAccessToken(String token){
+        Claims claims = getClaimsFormToken(token, JwtProperties.ACCESS_SECRET);
+        return claims.getExpiration();
+    }
+
+    public static Date getExpireTimeFromRefreshToken(String token){
+        Claims claims = getClaimsFormToken(token, JwtProperties.REFRESH_SECRET);
+        return claims.getExpiration();
     }
 }

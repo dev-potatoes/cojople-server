@@ -1,4 +1,4 @@
-package io.mojolll.project.v1.api.config.redis;
+package io.mojolll.project.v1.api.redis.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -35,18 +35,24 @@ public class RedisConfig {
      * 여기서는 <String, Object> 형식의 Template를 생성하였는데 필요한 형식이 있으면 추가하여 Bean으로 등록하면 됩니다!
      * 그리고 cache 기능, redisConnectionFactory 분리 등등 다양한 기능들을 추가할 수 있습니다.
      */
-    @Bean
-    public RedisTemplate<?, ?> redisTemplate() {
-        RedisTemplate<byte[], byte[]> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
-        return redisTemplate;
-    }
-    //    @Bean
-//    public RedisTemplate<String, Object> redisTemplate() {
-//        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-//        redisTemplate.setKeySerializer(new StringRedisSerializer());
-//        redisTemplate.setValueSerializer(new StringRedisSerializer());
+//    @Bean
+//    public RedisTemplate<?, ?> redisTemplate() {
+//        RedisTemplate<byte[], byte[]> redisTemplate = new RedisTemplate<>();
 //        redisTemplate.setConnectionFactory(redisConnectionFactory());
 //        return redisTemplate;
 //    }
+    @Bean
+    public RedisTemplate<String, String> redisTemplate() {
+        // redisTemplate를 받아와서 set, get, delete를 사용
+        RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
+        /**
+         * setKeySerializer, setValueSerializer 설정
+         * redis-cli을 통해 직접 데이터를 조회 시 알아볼 수 없는 형태로 출력되는 것을 방지
+         */
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new StringRedisSerializer());
+        redisTemplate.setConnectionFactory(redisConnectionFactory());
+
+        return redisTemplate;
+    }
 }
