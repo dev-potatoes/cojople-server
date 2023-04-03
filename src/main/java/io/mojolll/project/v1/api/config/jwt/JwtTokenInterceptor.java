@@ -17,7 +17,7 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
 
         if (header != null) {
             final String token = TokenUtils.getTokenFromHeader(header);
-            if (TokenUtils.isValidToken(token, JwtProperties.ACCESS_SECRET)) {
+            if (TokenUtils.isValidAccessToken(token)) {
                 return true;
             }
         }

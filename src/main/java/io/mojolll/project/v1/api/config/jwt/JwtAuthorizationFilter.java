@@ -2,9 +2,11 @@ package io.mojolll.project.v1.api.config.jwt;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.mojolll.project.v1.api.config.auth.PrincipalDetails;
+import io.mojolll.project.v1.api.redis.logout.LogoutAccessTokenRedisRepository;
 import io.mojolll.project.v1.api.user.model.User;
 import io.mojolll.project.v1.api.user.repositroy.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,10 +26,13 @@ import java.io.IOException;
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     private UserRepository userRepository;
+    private LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager,
+                                  UserRepository userRepository, LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository) {
         super(authenticationManager);
         this.userRepository = userRepository;
+        this.logoutAccessTokenRedisRepository = logoutAccessTokenRedisRepository;
     }
 
     //인증이나 권한이 필요한 주소요청이 있을때 거침
@@ -56,11 +61,13 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             email = TokenUtils.getUserEmailFromAccessToken(token);
         } catch (ExpiredJwtException e) {
             log.error("refresh token을 이용해서 access token 재발급 해주기");
+//            throw new AuthorizationServiceException("Access Token 만료 Refresh Token으로 처리하기");
         } catch (Exception e){
             e.printStackTrace();
         }
 
-        if (email != "") {
+        //로그아웃 토큰 있으면 안되게 수정하기
+        if (email != "" && logoutAccessTokenRedisRepository.findByEmail(email).isEmpty()) {
             User user = userRepository.findByEmail(email).get();
 
             // 인증은 토큰 검증시 끝. 인증을 하기 위해서가 아닌 스프링 시큐리티가 수행해주는 권한 처리를 위해

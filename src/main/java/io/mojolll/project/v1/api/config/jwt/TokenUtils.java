@@ -4,7 +4,9 @@ import io.jsonwebtoken.*;
 import io.mojolll.project.v1.api.user.model.User;
 import io.mojolll.project.v1.api.user.model.UserRole;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
@@ -15,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
+
 public final class TokenUtils {
 
     public static String generateJwtAccessToken(User user) {
@@ -35,7 +38,14 @@ public final class TokenUtils {
         return builder.compact();
     }
 
-    public static boolean isValidToken(String token, String secret) {
+    public static boolean isValidAccessToken(String token) {
+        return isValidToken(token,JwtProperties.ACCESS_SECRET);
+    }
+
+    public static boolean isValidRefreshToken(String token) {
+        return isValidToken(token,JwtProperties.REFRESH_SECRET);
+    }
+    private static boolean isValidToken(String token,String secret) {
         try {
             Claims claims = getClaimsFormToken(token, secret);
             log.info("expireTime:{}",claims.getExpiration());
@@ -119,4 +129,10 @@ public final class TokenUtils {
         Claims claims = getClaimsFormToken(token, JwtProperties.REFRESH_SECRET);
         return claims.getExpiration();
     }
+
+    // JWT 에서 인증 정보 조회
+//    public Authentication getAuthentication(String token) {
+//        UserDetails userDetails = principalDetailsService.loadUserByUsername(this.getUserEmail(token));
+//        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+//    }
 }

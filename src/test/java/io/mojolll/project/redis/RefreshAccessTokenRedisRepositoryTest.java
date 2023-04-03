@@ -30,9 +30,11 @@ public class RefreshAccessTokenRedisRepositoryTest {
     public void save() throws Exception{
         //given
         String refreshToken = "refreshToken";
+        String accessToken = "accessToken";
         String email = "email";
         Long expiration = 3000L;
-        RefreshTokenFromRedis refreshTokenFromRedis = RefreshTokenFromRedis.createRefreshToken(refreshToken, email, expiration);
+        RefreshTokenFromRedis refreshTokenFromRedis = RefreshTokenFromRedis.createRefreshToken(refreshToken, email,
+                accessToken,expiration);
 
         //when
         refreshTokenRedisRepository.save(refreshTokenFromRedis);
@@ -43,6 +45,7 @@ public class RefreshAccessTokenRedisRepositoryTest {
 
         assertAll(
                 () -> assertEquals(refreshToken,find.getId()),
+                () -> assertEquals(accessToken,find.getAccessToken()),
                 () -> assertEquals(email,find.getEmail()),
                 () -> assertEquals(expiration/1000,find.getExpiration())
         );

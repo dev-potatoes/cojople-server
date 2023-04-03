@@ -3,6 +3,7 @@ package io.mojolll.project.v1.api.redis.refresh;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 import org.springframework.data.redis.core.index.Indexed;
@@ -27,17 +28,25 @@ public class RefreshTokenFromRedis {
     private String id;
 
     @Indexed // 필드 값으로 데이터 찾을 수 있게 하는 어노테이션(findByAccessToken)
+    private String accessToken;
+
+    @Indexed // 필드 값으로 데이터 찾을 수 있게 하는 어노테이션(findByAccessToken)
     private String email;
 
     @TimeToLive
     private Long expiration; // seconds
 
-    public static RefreshTokenFromRedis createRefreshToken(String refreshToken, String email,
+    public static RefreshTokenFromRedis createRefreshToken(String refreshToken, String email, String accessToken,
                                                                 Long remainingMilliSeconds){
         return RefreshTokenFromRedis.builder()
                 .id(refreshToken)
+                .accessToken(accessToken)
                 .email(email)
                 .expiration(remainingMilliSeconds/1000)
                 .build();
+    }
+
+    public void updateAccessToken(String accessToken){
+        this.accessToken = accessToken;
     }
 }
