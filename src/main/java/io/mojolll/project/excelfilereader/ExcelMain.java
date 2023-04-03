@@ -1,8 +1,6 @@
-<<<<<<<< HEAD:src/main/java/io/mojolll/project/filereader/ExcelMain.java
-package io.mojolll.project.filereader;
-========
 package io.mojolll.project.excelfilereader;
->>>>>>>> feature/issue/11-3:src/main/java/io/mojolll/project/excelfilereader/ExcelMain.java
+
+import io.mojolll.project.excelfilereader.ExcelConnection;
 
 import java.io.IOException;
 import java.util.List;

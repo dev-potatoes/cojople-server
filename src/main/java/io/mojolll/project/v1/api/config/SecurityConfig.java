@@ -44,7 +44,15 @@ public class SecurityConfig {
                 .build();
     }
 
+    //AbstractHttpConfigurer가 SecurityConfigurerAdapter 상속받고 있다.
+    //AbstractHttpConfigurer<T extends AbstractHttpConfigurer<T, B>, B extends HttpSecurityBuilder<B>>
+    //HttpSecurity는 HttpSecurityBuilder 상속받고 있음
     public class MyCustomDsl extends AbstractHttpConfigurer<MyCustomDsl, HttpSecurity> {
+//        @Override
+//        public void init(HttpSecurity builder) throws Exception {
+//            super.init(builder);
+//        }
+
         @Override
         public void configure(HttpSecurity http) throws Exception {
             AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);

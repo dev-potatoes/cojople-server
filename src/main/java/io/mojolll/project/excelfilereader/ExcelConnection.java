@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:src/main/java/io/mojolll/project/filereader/ExcelConnection.java
-package io.mojolll.project.filereader;
-========
 package io.mojolll.project.excelfilereader;
->>>>>>>> feature/issue/11-3:src/main/java/io/mojolll/project/excelfilereader/ExcelConnection.java
 
 
 import java.io.IOException;

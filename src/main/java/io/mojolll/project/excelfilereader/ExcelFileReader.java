@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:src/main/java/io/mojolll/project/filereader/ExcelFileReader.java
-package io.mojolll.project.filereader;
-========
 package io.mojolll.project.excelfilereader;
->>>>>>>> feature/issue/11-3:src/main/java/io/mojolll/project/excelfilereader/ExcelFileReader.java
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;

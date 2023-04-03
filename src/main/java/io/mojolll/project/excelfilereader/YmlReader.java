@@ -1,8 +1,5 @@
-<<<<<<<< HEAD:src/main/java/io/mojolll/project/filereader/YmlReader.java
-package io.mojolll.project.filereader;
-========
 package io.mojolll.project.excelfilereader;
->>>>>>>> feature/issue/11-3:src/main/java/io/mojolll/project/excelfilereader/YmlReader.java
+
 
 import org.yaml.snakeyaml.Yaml;
 
