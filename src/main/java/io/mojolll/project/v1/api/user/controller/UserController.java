@@ -1,7 +1,10 @@
 package io.mojolll.project.v1.api.user.controller;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.mojolll.project.v1.api.config.jwt.JwtProperties;
 import io.mojolll.project.v1.api.config.jwt.TokenUtils;
+import io.mojolll.project.v1.api.exception.AppCustomException;
+import io.mojolll.project.v1.api.exception.ErrorCode;
 import io.mojolll.project.v1.api.redis.logout.LogoutAccessTokenFromRedis;
 import io.mojolll.project.v1.api.redis.refresh.RefreshTokenFromRedis;
 import io.mojolll.project.v1.api.user.dto.ReissueDto;
@@ -10,6 +13,7 @@ import io.mojolll.project.v1.api.user.model.User;
 import io.mojolll.project.v1.api.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.core.Authentication;
@@ -49,7 +53,8 @@ public class UserController {
     public ResponseEntity<User> signUp(@RequestBody final UserRequestDto userDto) {
 
         if(userService.isEmailDuplicated(userDto.getEmail())){
-            return ResponseEntity.badRequest().build();
+            throw new AppCustomException(ErrorCode.USERNAME_DUPLICATED,
+                    userDto.getEmail() + "이메일이 이미 존재합니다.");
         }
         return ResponseEntity.ok().body(userService.signUp(userDto));
     }
@@ -64,7 +69,7 @@ public class UserController {
         response.setHeader(JwtProperties.ACCESS_HEADER_STRING,JwtProperties.TOKEN_PREFIX +
                 responseValue.get("accessToken").toString());
 
-        return ResponseEntity.ok().body((User)responseValue.get("user"));
+        return ResponseEntity.status(HttpStatus.CREATED).body((User)responseValue.get("user"));
     }
 
     @PostMapping("/logout")
@@ -72,10 +77,6 @@ public class UserController {
 
         String token = request.getHeader(JwtProperties.ACCESS_HEADER_STRING)
                 .replace(JwtProperties.TOKEN_PREFIX, "");
-
-        if (!TokenUtils.isValidAccessToken(token)){
-            throw new AuthorizationServiceException("토큰 에러");
-        }
 
         return userService.logout(token);
     }
