@@ -1,4 +1,28 @@
+server:
+  port: 8081
+
 spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            clientId: oauth2-client-app
+            clientSecret: AbiFqNHhoWILjexz74QPZfumFgTYGhNF
+            clientName: oauth2-client-app
+            redirectUri: http://localhost:8081/login/oauth2/code/keycloak
+            authorizationGrantType: authorization_code
+            clientAuthenticationMethod: client_secret_basic
+            scope: openid,profile,email
+        provider:
+          keycloak:
+            authorizationUri: http://0.0.0.0:8080/realms/oauth2/protocol/openid-connect/auth
+            tokenUri: http://0.0.0.0:8080/realms/oauth2/protocol/openid-connect/token
+            issuerUri: http://0.0.0.0:8080/realms/oauth2
+            userInfoUri: http://0.0.0.0:8080/realms/oauth2/protocol/openid-connect/userinfo
+            jwkSetUri: http://0.0.0.0:8080/realms/oauth2/protocol/openid-connect/certs
+            userNameAttribute: preferred_username
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/mojolll?serverTimezone=UTC&characterEncoding=UTF-8
