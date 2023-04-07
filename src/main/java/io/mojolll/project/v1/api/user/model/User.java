@@ -20,18 +20,9 @@ public class User {
     private String email;
     private String password;
 
+    //socialUser랑 같은 role로 묶어서 처리하기
     @Column
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     @Builder.Default
     private List<String> roles = new ArrayList<>();
-
-//    private UserRole roles; //USER, GUEST
-
-    // ENUM으로 안하고 ,로 해서 구분해서 ROLE을 입력 -> 그걸 파싱!!
-//    public List<String> getRoleList() {
-//        if (this.roles.length() > 0) {
-//            return Arrays.asList(this.roles.split(","));
-//        }
-//        return new ArrayList<>();
-//    }
 }
