@@ -8,10 +8,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import static io.mojolll.project.v1.api.oauth2.RoleConstant.*;
+
 // SimpleAuthorityMapper 내용
 public class CustomAuthorityMapper implements GrantedAuthoritiesMapper {
-
-    private String PREFIX = "ROLE_";
 
     @Override
     public Set<GrantedAuthority> mapAuthorities(Collection<? extends GrantedAuthority> authorities) {
@@ -19,7 +19,6 @@ public class CustomAuthorityMapper implements GrantedAuthoritiesMapper {
         for (GrantedAuthority authority : authorities) {
             mapped.add(mapAuthority(authority.getAuthority()));
         }
-
         return mapped;
     }
 
@@ -27,10 +26,10 @@ public class CustomAuthorityMapper implements GrantedAuthoritiesMapper {
     private GrantedAuthority mapAuthority(String name) {
         if(name.lastIndexOf(".") > 0){
             int index = name.lastIndexOf(".");
-            name = "SCOPE_" + name.substring(index+1);
+            name = SCOPE + name.substring(index+1);
         }
-        if (!name.startsWith(PREFIX)) {
-            name = PREFIX + name;
+        if (!name.startsWith(ROLE)) {
+            name = ROLE + name;
         }
         return new SimpleGrantedAuthority(name);
     }
