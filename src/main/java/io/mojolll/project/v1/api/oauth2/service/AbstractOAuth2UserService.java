@@ -3,7 +3,6 @@ package io.mojolll.project.v1.api.oauth2.service;
 import io.mojolll.project.v1.api.oauth2.model.*;
 import io.mojolll.project.v1.api.oauth2.repository.SocialUserRepository;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -41,12 +40,10 @@ public abstract class AbstractOAuth2UserService {
         String registrationId = clientRegistration.getRegistrationId();
 
         switch (registrationId) {
-            case "keycloak":
-                return new KeycloakUser(oAuth2User,clientRegistration);
             case "google":
                 return new GoogleUser(oAuth2User,clientRegistration);
-            case "naver":
-                return new NaverUser(oAuth2User,clientRegistration);
+            case "github":
+                return new GitHubUser(oAuth2User,clientRegistration);
             case "kakao":
                 return new KakaoUser(oAuth2User,clientRegistration);
         }

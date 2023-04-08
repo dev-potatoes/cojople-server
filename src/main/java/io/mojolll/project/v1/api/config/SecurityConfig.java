@@ -66,6 +66,7 @@ public class SecurityConfig {
                         .access("hasAnyRole('SCOPE_openid')")
                         .antMatchers("/").permitAll()
                         .anyRequest().authenticated());
+//                        .exceptionHandling().authenticationEntryPoint()
          http
                 .oauth2Login(oauth2 -> oauth2.userInfoEndpoint(userInfoEndpointConfig ->
                         userInfoEndpointConfig

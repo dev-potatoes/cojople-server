@@ -40,7 +40,7 @@ public class SocialUserService {
                 .registrationId(registrationId)
                 .id(providerUser.getId())
                 .username(providerUser.getUsername())
-//                .password(providerUser.getPassword())
+                .password(providerUser.getPassword()) //임의로 설정
                 .provider(providerUser.getProvider())
                 .email(providerUser.getEmail())
                 .authorities(authorities)

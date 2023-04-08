@@ -14,12 +14,17 @@ public class KakaoUser extends OAuth2ProviderUser{
     //제공자 별로 차이가 나는 것들 Override
     @Override
     public String getId() {
-        return null;
+        return (String) getAttributes().get("sub");
     }
 
     @Override
     public String getUsername() {
-        return null;
+        return (String) getAttributes().get("nickname");
     }
+
+//    @Override
+//    public String getPicture() {
+//        return (String)subAttributes.get("profile_image_url");
+//    }
 
 }
