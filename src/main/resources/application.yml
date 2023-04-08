@@ -1,4 +1,51 @@
+server:
+  port: 8081
+
 spring:
+  security:
+    oauth2:
+      client:
+
+        registration:
+
+          google:
+            client-id: 446101020262-1i0bbmetf6ug3seb6krubsa85po28hp5.apps.googleusercontent.com
+            client-secret: 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
+            scope: openid,profile,email
+
+          github:
+            client-id: 4c3b075956b10ec02d40
+            client-secret: 42a8162043be67d747884a5aa5dc826867ec4bab
+#            authorization-grant-type: authorization_code
+#            client-name: cojople
+#            redirect-uri: http://localhost:8081/login/oauth2/code/github
+            scope: profile,email
+
+          kakao:
+            client-id: 9b3f075daee50d35e66e866a4f9376a2
+            client-secret: 0hpHABl7jp4V9BlulcP3w4pHmWZZk55A
+            client-name: cojople
+            redirect-uri: http://localhost:8081/login/oauth2/code/kakao
+            authorization-grant-type: authorization_code
+            scope: profile_nickname,profile_image,account_email,openid
+
+
+        provider:
+          #https://kauth.kakao.com/.well-known/openid-configuration
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            issuer-uri: https://kauth.kakao.com
+            user-info-uri: https://kapi.kakao.com/v1/oidc/userinfo
+            jwk-set-uri: https://kauth.kakao.com/.well-known/jwks.json
+            user-name-attribute: sub
+
+  mvc:
+    static-path-pattern: /static/**
+
+
+
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/mojolll?serverTimezone=UTC&characterEncoding=UTF-8

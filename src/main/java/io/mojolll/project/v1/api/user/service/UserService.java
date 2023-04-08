@@ -3,6 +3,8 @@ package io.mojolll.project.v1.api.user.service;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.mojolll.project.v1.api.config.jwt.JwtProperties;
 import io.mojolll.project.v1.api.config.jwt.TokenUtils;
+import io.mojolll.project.v1.api.exception.AppCustomException;
+import io.mojolll.project.v1.api.exception.ErrorCode;
 import io.mojolll.project.v1.api.redis.logout.LogoutAccessTokenFromRedis;
 import io.mojolll.project.v1.api.redis.logout.LogoutAccessTokenRedisRepository;
 import io.mojolll.project.v1.api.redis.refresh.RefreshTokenFromRedis;
@@ -13,6 +15,7 @@ import io.mojolll.project.v1.api.user.model.User;
 import io.mojolll.project.v1.api.user.model.UserRole;
 import io.mojolll.project.v1.api.user.repositroy.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,8 +38,6 @@ public class UserService {
 
 
     public User signUp(final UserRequestDto userDto) {
-//        logoutAccessTokenRedisRepository.deleteAll();
-//        refreshTokenRedisRepository.deleteAll();
         final User user = User.builder()
                 .email(userDto.getEmail())
                 .password(passwordEncoder.encode(userDto.getPassword()))
@@ -50,10 +51,10 @@ public class UserService {
         HashMap<String, Object> response = new HashMap<>();
 
         User searchUser = userRepository.findByEmail(userDto.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("아이디가 일치하지 않습니다."));
+                .orElseThrow(() -> new AppCustomException(ErrorCode.USERNAME_NOT_FOUND,"해당 이메일이 존재하지 않습니다."));
 
         if (!passwordEncoder.matches(userDto.getPassword(),searchUser.getPassword())){
-            throw new RuntimeException();
+            throw new AppCustomException(ErrorCode.INVALID_PASSWORD,"패스워드가 일치하지 않습니다.");
         }
 
         Optional<RefreshTokenFromRedis> refreshTokenEntity = refreshTokenRedisRepository.findByEmail(userDto.getEmail());
@@ -84,11 +85,12 @@ public class UserService {
 
         LogoutAccessTokenFromRedis logoutAccessToken = LogoutAccessTokenFromRedis.createLogoutAccessToken(token,
                 userEmailFromAccessToken, expireTimeFromAccessToken.getTime());
-
         logoutAccessTokenRedisRepository.save(logoutAccessToken);
 
+
+        //refresh token 만료되어 있을 수 있다.
         RefreshTokenFromRedis refreshToken = refreshTokenRedisRepository.findByEmail(userEmailFromAccessToken)
-                .orElseThrow(() -> new UsernameNotFoundException("refresh token 못찾음"));
+                .orElseThrow(() -> new AppCustomException(ErrorCode.USERNAME_NOT_FOUND, token + "에 해당하는 유저를 찾을 수 없습니다."));
 
         refreshTokenRedisRepository.delete(refreshToken);
         return ResponseEntity.ok().body(logoutAccessToken);
@@ -99,24 +101,26 @@ public class UserService {
 
         String userEmailFromToken = TokenUtils.getUserEmailFromAccessToken(token);
 
-//        if(logoutAccessTokenRedisRepository.findById(token).isEmpty()){
-            return ResponseEntity.ok().body(userRepository.findByEmail(userEmailFromToken)
-                    .orElseThrow(() -> new UsernameNotFoundException(token + "에 해당하는 유저를 찾을 수 없습니다.")));
-//        }
-
-//        return ResponseEntity.badRequest().build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(userRepository.findByEmail(userEmailFromToken)
+                .orElseThrow(() -> new AppCustomException(ErrorCode.USERNAME_NOT_FOUND,token + "에 해당하는 유저를 찾을 수 없습니다.")));
     }
 
     public String reissue(final ReissueDto reissueDto){
 
         RefreshTokenFromRedis refreshToken = refreshTokenRedisRepository.findByAccessToken(reissueDto.getAccessToken())
-                .orElseThrow(() -> new UsernameNotFoundException("token이 일치하지 않습니다."));
+                .orElseThrow(() -> new AppCustomException(ErrorCode.INVALID_TOKEN, "token이 일치하지 않습니다."));
 
-        if (!TokenUtils.isValidRefreshToken(refreshToken.getId()))
-            throw new UsernameNotFoundException("refresh token 에러");
+        try {
+            TokenUtils.isValidRefreshToken(refreshToken.getId());
+        } catch (ExpiredJwtException e) {
+            throw new AppCustomException(ErrorCode.EXPIRE_TOKEN,"Refresh Token 유효시간 만료");
+        } catch (Exception e){
+            throw new AppCustomException(ErrorCode.INVALID_TOKEN,"Refresh Token이 유효하지 않습니다.");
+        }
+
 
         User user = userRepository.findByEmail(refreshToken.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("token이 일치하지 않습니다."));
+                .orElseThrow(() -> new AppCustomException(ErrorCode.USERNAME_NOT_FOUND, "해당 유저가 존재하지 않습니다."));
 
         String accessToken = TokenUtils.generateJwtAccessToken(user);
         refreshToken.updateAccessToken(accessToken);

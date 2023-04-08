@@ -2,6 +2,8 @@ package io.mojolll.project.v1.api.config.jwt;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.mojolll.project.v1.api.config.auth.PrincipalDetails;
+import io.mojolll.project.v1.api.exception.AppCustomException;
+import io.mojolll.project.v1.api.exception.ErrorCode;
 import io.mojolll.project.v1.api.redis.logout.LogoutAccessTokenRedisRepository;
 import io.mojolll.project.v1.api.user.model.User;
 import io.mojolll.project.v1.api.user.repositroy.UserRepository;
@@ -60,10 +62,14 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         try {
             email = TokenUtils.getUserEmailFromAccessToken(token);
         } catch (ExpiredJwtException e) {
-            log.error("refresh token을 이용해서 access token 재발급 해주기");
-//            throw new AuthorizationServiceException("Access Token 만료 Refresh Token으로 처리하기");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"token 유효시간 만료");
+            response.sendRedirect("/api/v1/users/reissue");
+            chain.doFilter(request, response);
+
         } catch (Exception e){
-            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"token이 유효하지 않습니다.");
+            response.sendRedirect("/api/v1/users/login");
+            chain.doFilter(request, response);
         }
 
         //로그아웃 토큰 있으면 안되게 수정하기
