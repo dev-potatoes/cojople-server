@@ -22,7 +22,8 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
             }
         }
         log.info("JwtTokenInterceptor : false");
-        response.sendRedirect("/error/unauthorized");
+        //여기서 JWT 만료되면 재발급 까지
+//        response.sendRedirect("/error/unauthorized");
         return false;
 
     }

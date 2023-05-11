@@ -22,7 +22,7 @@ public class User {
 
     //socialUser랑 같은 role로 묶어서 처리하기
     @Column
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 }

@@ -1,13 +1,15 @@
 server:
-  port: 8081
+  port: 8086
 
 spring:
+  mvc:
+    static-path-pattern: /static/**
+
   security:
     oauth2:
       client:
 
         registration:
-
           google:
             client-id: 446101020262-1i0bbmetf6ug3seb6krubsa85po28hp5.apps.googleusercontent.com
             client-secret: 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
@@ -39,11 +41,6 @@ spring:
             user-info-uri: https://kapi.kakao.com/v1/oidc/userinfo
             jwk-set-uri: https://kauth.kakao.com/.well-known/jwks.json
             user-name-attribute: sub
-
-  mvc:
-    static-path-pattern: /static/**
-
-
 
 
   datasource:

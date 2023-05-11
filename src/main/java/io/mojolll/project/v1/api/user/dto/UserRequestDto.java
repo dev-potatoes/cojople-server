@@ -1,12 +1,14 @@
 package io.mojolll.project.v1.api.user.dto;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
 @Getter @Setter
+@NoArgsConstructor
 public class UserRequestDto {
 
     @NotEmpty(message = "이메일은 필수 입력값입니다.")
@@ -15,4 +17,9 @@ public class UserRequestDto {
 
     @NotEmpty(message = "비밀번호는 필수 입력값입니다.")
     private String password;
+
+    public UserRequestDto(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }

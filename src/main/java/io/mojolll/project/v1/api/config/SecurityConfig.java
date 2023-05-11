@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -30,8 +29,6 @@ public class SecurityConfig {
     CustomOAuth2UserService customOAuth2UserService;
     @Autowired
     CustomOidcUserService customOidcUserService;
-
-
     private final UserRepository userRepository;
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
     private final CorsConfig corsConfig;
@@ -52,13 +49,13 @@ public class SecurityConfig {
                 .apply(new MyCustomDsl()) // 커스텀 필터 등록
                 .and()
                 .authorizeRequests(authroize -> authroize
-//                        .antMatchers("/api/v1/users/join","/api/v1/users/login","/api/v1/users/reissue").permitAll()
-//                        .antMatchers("/api/v1/users/**")
-//                        .access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
-//                        .antMatchers("/api/v1/manager/**")
-//                        .access("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
-//                        .antMatchers("/api/v1/admin/**")
-//                        .access("hasRole('ROLE_ADMIN')")
+                        .antMatchers("/api/v1/users/join","/api/v1/users/login","/api/v1/users/reissue").permitAll()
+                        .antMatchers("/api/v1/users/**")
+                        .access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
+                        .antMatchers("/api/v1/manager/**")
+                        .access("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
+                        .antMatchers("/api/v1/admin/**")
+                        .access("hasRole('ROLE_ADMIN')")
                         .antMatchers("/api/user")
                         //anyRole이니까 둘중 하나면 가능
                         .access("hasAnyRole('SCOPE_profile','SCOPE_email')")
@@ -67,13 +64,11 @@ public class SecurityConfig {
                         .antMatchers("/").permitAll()
                         .anyRequest().authenticated());
 //                        .exceptionHandling().authenticationEntryPoint()
-         http
-                .oauth2Login(oauth2 -> oauth2.userInfoEndpoint(userInfoEndpointConfig ->
-                        userInfoEndpointConfig
-                                .userService(customOAuth2UserService)
-                                .oidcUserService(customOidcUserService)));
-         http
-                .logout().logoutSuccessUrl("/");
+//         http
+//                .oauth2Login(oauth2 -> oauth2.userInfoEndpoint(userInfoEndpointConfig ->
+//                        userInfoEndpointConfig
+//                                .userService(customOAuth2UserService)
+//                                .oidcUserService(customOidcUserService)));
 
          return http.build();
     }
@@ -88,6 +83,7 @@ public class SecurityConfig {
     //AbstractHttpConfigurer<T extends AbstractHttpConfigurer<T, B>, B extends HttpSecurityBuilder<B>>
     //HttpSecurity는 HttpSecurityBuilder 상속받고 있음
     public class MyCustomDsl extends AbstractHttpConfigurer<MyCustomDsl, HttpSecurity> {
+
         @Override
         public void configure(HttpSecurity http) throws Exception {
             AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
@@ -97,5 +93,4 @@ public class SecurityConfig {
                     .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository, logoutAccessTokenRedisRepository));
         }
     }
-
 }

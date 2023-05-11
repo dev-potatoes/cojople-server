@@ -1,10 +1,7 @@
 package io.mojolll.project.v1.api.user.controller;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import io.mojolll.project.v1.api.config.jwt.JwtProperties;
-import io.mojolll.project.v1.api.config.jwt.TokenUtils;
-import io.mojolll.project.v1.api.exception.AppCustomException;
-import io.mojolll.project.v1.api.exception.ErrorCode;
+import io.mojolll.project.v1.api.exception.DuplicateEmailException;
 import io.mojolll.project.v1.api.redis.logout.LogoutAccessTokenFromRedis;
 import io.mojolll.project.v1.api.redis.refresh.RefreshTokenFromRedis;
 import io.mojolll.project.v1.api.user.dto.ReissueDto;
@@ -15,9 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AuthorizationServiceException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,8 +47,7 @@ public class UserController {
     public ResponseEntity<User> signUp(@RequestBody final UserRequestDto userDto) {
 
         if(userService.isEmailDuplicated(userDto.getEmail())){
-            throw new AppCustomException(ErrorCode.USERNAME_DUPLICATED,
-                    userDto.getEmail() + "이메일이 이미 존재합니다.");
+            throw new DuplicateEmailException(userDto.getEmail() + "이메일이 이미 존재합니다.");
         }
         return ResponseEntity.ok().body(userService.signUp(userDto));
     }
