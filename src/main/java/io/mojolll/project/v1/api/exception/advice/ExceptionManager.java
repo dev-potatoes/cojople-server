@@ -24,7 +24,7 @@ public class ExceptionManager {
         return new ErrorResult("USER-NOT-EX", e.getMessage());
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(DuplicateEmailException.class)
     public ErrorResult duplicateEmailExceptionHadnler (DuplicateEmailException e){
         log.error("[exceptionHandler] ex", e);
