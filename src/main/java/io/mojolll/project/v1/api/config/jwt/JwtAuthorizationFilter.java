@@ -21,6 +21,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 
 // 인가
@@ -31,14 +32,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     private UserRepository userRepository;
     private LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
-    private JwtAuthenticationEntryPoint authenticationEntryPoint;
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager,
-                                  UserRepository userRepository, LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository
-    ,JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
+                                  UserRepository userRepository, LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository) {
         super(authenticationManager);
         this.userRepository = userRepository;
         this.logoutAccessTokenRedisRepository = logoutAccessTokenRedisRepository;
-        this.authenticationEntryPoint = jwtAuthenticationEntryPoint;
     }
 
     //인증이나 권한이 필요한 주소요청이 있을때 거침
@@ -48,7 +46,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String header = request.getHeader(JwtProperties.ACCESS_HEADER_STRING);
         //헤더가 있는지 확인
         if (header == null || !header.startsWith(JwtProperties.TOKEN_PREFIX)) {
-            authenticationEntryPoint.commence(request, response,new TokenNotFoundException("token정보가 없습니다."));
+            chain.doFilter(request, response);
             return;
         }
         log.info("header:{}",header);
@@ -89,37 +87,27 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         } catch (ExpiredJwtException e) {
             // JWT 토큰이 만료된 경우
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            String errorJson =
-                    "{" +
-                            "\"uri\":\""+request.getRequestURI() + "\","+
-                            "\"error\":\"PW-EX\"," +
-                            "\"message\":\"" + e.getMessage() + "\"" +
-                            "}";
-            response.getWriter().write(errorJson);
+            handleAuthenticationExceptionMessage(request, response, e,HttpStatus.UNAUTHORIZED.value(),"TOKEN-TIMEOUT-EX");
         }catch (LogoutTokenException e) {
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            String errorJson =
-                    "{" +
-                            "\"uri\":\""+request.getRequestURI() + "\","+
-                            "\"error\":\"LOGOUT-EX\"," +
-                            "\"message\":\"" + e.getMessage() + "\"" +
-                            "}";
-            response.getWriter().write(errorJson);
+            handleAuthenticationExceptionMessage(request, response, e,HttpStatus.UNAUTHORIZED.value(),"LOGOUT-EX");
         }
         catch (Exception e) {
-            // 기타 예외 발생 시
-            response.setStatus(HttpStatus.FORBIDDEN.value());
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            String errorJson =
-                    "{" +
-                            "\"uri\":\""+request.getRequestURI() + "\","+
-                            "\"error\":\"PW-EX\"," +
-                            "\"message\":\"" + e.getMessage() + "\"" +
-                            "}";
-            response.getWriter().write(errorJson);
+            handleAuthenticationExceptionMessage(request, response, e,HttpStatus.FORBIDDEN.value(),"ANY-EX");
         }
+    }
+
+    private static void handleAuthenticationExceptionMessage(HttpServletRequest request, HttpServletResponse response, Exception e, int setStatusValue, String code) throws IOException {
+        response.setStatus(setStatusValue);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter writer = response.getWriter();
+        String errorJson =
+                "{" +
+                        "\"uri\":\""+request.getRequestURI() + "\","+
+                        "\"code\":\""+code+"\"," +
+                        "\"message\":\"" + e.getMessage() + "\"" +
+                        "}";
+        writer.write(errorJson);
+        writer.flush();
     }
 }

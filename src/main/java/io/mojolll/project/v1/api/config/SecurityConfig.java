@@ -1,6 +1,6 @@
 package io.mojolll.project.v1.api.config;
 
-import io.mojolll.project.v1.api.config.jwt.JwtAuthenticationEntryPoint;
+import io.mojolll.project.v1.api.config.jwt.JwtAccessDeniedHandler;
 import io.mojolll.project.v1.api.config.jwt.JwtAuthenticationFilter;
 import io.mojolll.project.v1.api.config.jwt.JwtAuthorizationFilter;
 import io.mojolll.project.v1.api.oauth2.CustomAuthorityMapper;
@@ -31,7 +31,7 @@ public class SecurityConfig {
     @Autowired
     CustomOidcUserService customOidcUserService;
     @Autowired
-    JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final UserRepository userRepository;
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
     private final CorsConfig corsConfig;
@@ -65,7 +65,9 @@ public class SecurityConfig {
                         .antMatchers("/api/oidc")
                         .access("hasAnyRole('SCOPE_openid')")
                         .antMatchers("/").permitAll()
-                        .anyRequest().authenticated());
+                        .anyRequest().authenticated())
+                 .exceptionHandling()
+                 .accessDeniedHandler(jwtAccessDeniedHandler);
 //                        .exceptionHandling().authenticationEntryPoint()
 //         http
 //                .oauth2Login(oauth2 -> oauth2.userInfoEndpoint(userInfoEndpointConfig ->
@@ -93,7 +95,7 @@ public class SecurityConfig {
             http
                     .addFilter(corsConfig.corsFilter()) //@CrossOrigin(인증X), 시큐리티 필터에 등록 -> 인증(O)
                     .addFilter(new JwtAuthenticationFilter(authenticationManager))
-                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository, logoutAccessTokenRedisRepository,jwtAuthenticationEntryPoint));
+                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository, logoutAccessTokenRedisRepository));
         }
     }
 }
