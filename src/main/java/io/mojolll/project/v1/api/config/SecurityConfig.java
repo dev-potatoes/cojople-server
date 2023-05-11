@@ -1,5 +1,6 @@
 package io.mojolll.project.v1.api.config;
 
+import io.mojolll.project.v1.api.config.jwt.JwtAuthenticationEntryPoint;
 import io.mojolll.project.v1.api.config.jwt.JwtAuthenticationFilter;
 import io.mojolll.project.v1.api.config.jwt.JwtAuthorizationFilter;
 import io.mojolll.project.v1.api.oauth2.CustomAuthorityMapper;
@@ -29,6 +30,8 @@ public class SecurityConfig {
     CustomOAuth2UserService customOAuth2UserService;
     @Autowired
     CustomOidcUserService customOidcUserService;
+    @Autowired
+    JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final UserRepository userRepository;
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
     private final CorsConfig corsConfig;
@@ -90,7 +93,7 @@ public class SecurityConfig {
             http
                     .addFilter(corsConfig.corsFilter()) //@CrossOrigin(인증X), 시큐리티 필터에 등록 -> 인증(O)
                     .addFilter(new JwtAuthenticationFilter(authenticationManager))
-                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository, logoutAccessTokenRedisRepository));
+                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository, logoutAccessTokenRedisRepository,jwtAuthenticationEntryPoint));
         }
     }
 }

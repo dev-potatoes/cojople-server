@@ -1,4 +1,4 @@
-package io.mojolll.project.v1.api.exception.advice;
+package io.mojolll.project.v1.api.exception;
 
 public class RefreshTokenExpireException extends RuntimeException{
     public RefreshTokenExpireException() {

@@ -4,7 +4,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.mojolll.project.v1.api.config.jwt.TokenUtils;
 import io.mojolll.project.v1.api.exception.TokenNotFoundException;
-import io.mojolll.project.v1.api.exception.advice.RefreshTokenExpireException;
+import io.mojolll.project.v1.api.exception.RefreshTokenExpireException;
 import io.mojolll.project.v1.api.redis.logout.LogoutAccessTokenFromRedis;
 import io.mojolll.project.v1.api.redis.logout.LogoutAccessTokenRedisRepository;
 import io.mojolll.project.v1.api.redis.refresh.RefreshTokenFromRedis;

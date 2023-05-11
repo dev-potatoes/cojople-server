@@ -44,6 +44,13 @@ public class ExceptionManager {
         return new ErrorResult("TOKEN-NOT-EX", e.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(LogoutTokenException.class)
+    public ErrorResult logoutTokenExceptionHandler (LogoutTokenException e){
+        log.error("[exceptionHandler] ex", e);
+        return new ErrorResult("LOGOUT-EX", e.getMessage());
+    }
+
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler
     public ErrorResult exHandler(Exception e) {
