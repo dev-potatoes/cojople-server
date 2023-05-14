@@ -63,3 +63,8 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+//bootJar, bootRun 넣어주기
+bootJar {
+	mainClass = 'io.mojolll.project.MojolllApplication'
+}
