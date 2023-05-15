@@ -1,5 +1,9 @@
+#spring:
+#  profiles:
+#    active: local
+#---
 server:
-  port: 8086
+  port: 8084
 
 spring:
   mvc:
@@ -45,9 +49,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/mojolll?serverTimezone=UTC&characterEncoding=UTF-8
-    username: root
-    password: hwryu990927!
+    url: jdbc:mysql://52.79.130.222:3306/project?serverTimezone=UTC&characterEncoding=UTF-8
+    username: uhanuu
+    password: 1234
 
 #  autoconfigure:
 #    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
@@ -72,7 +76,7 @@ spring:
       max-idle: 8
       max-active: 8
     port: 6379
-    host: 127.0.0.1
+    host: 52.79.130.222
 
 logging:
   level:
